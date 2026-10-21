@@ -10,18 +10,18 @@
 <style>
 /* Layout: one long horizontally scrolling chart strip with a sticky y-axis; notes stacked beneath. */
 :root{
-  --bg:#f7f6f2; --fg:#23231f; --muted:#6b6a63; --line:#d9d7cf; --grid:#e8e6df; --panel:#ffffff;
-  --all:#c9512b; --rs3:#c9512b; --osrs:#13856a;
-  --trade:#b4850c; --mtx:#5e55c4; --osrs-ev:#2a7fcb; --rev:#b5347c; --neutral:#8a8880;
+  --bg:#f7f6f2; --fg:#23231f; --muted:#55544e; --line:#d9d7cf; --grid:#e8e6df; --panel:#ffffff;
+  --all:#b8441c; --rs3:#b8441c; --osrs:#0b6f8e;
+  --trade:#b4850c; --mtx:#5e55c4; --osrs-ev:#2a7fcb; --rev:#b5347c; --neutral:#66645e;
   --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#17171a; --fg:#ebe9e2; --muted:#9d9b93; --line:#36363c; --grid:#26262b; --panel:#1f1f23;
-  --all:#f0825a; --rs3:#f0825a; --osrs:#3fc39d; --trade:#e6b84a; --mtx:#9c93f2; --osrs-ev:#6db2f5; --rev:#ef7fbf; --neutral:#8a8880; color-scheme:dark } }
+  --bg:#17171a; --fg:#ebe9e2; --muted:#c4c2b9; --line:#3a3a40; --grid:#2a2a2f; --panel:#1f1f23;
+  --all:#f0825a; --rs3:#f0825a; --osrs:#4fb8e0; --trade:#e6b84a; --mtx:#9c93f2; --osrs-ev:#6db2f5; --rev:#ef7fbf; --neutral:#b9b7ae; color-scheme:dark } }
 :root[data-theme="dark"]{
-  --bg:#17171a; --fg:#ebe9e2; --muted:#9d9b93; --line:#36363c; --grid:#26262b; --panel:#1f1f23;
-  --all:#f0825a; --rs3:#f0825a; --osrs:#3fc39d; --trade:#e6b84a; --mtx:#9c93f2; --osrs-ev:#6db2f5; --rev:#ef7fbf; --neutral:#8a8880; color-scheme:dark }
+  --bg:#17171a; --fg:#ebe9e2; --muted:#c4c2b9; --line:#3a3a40; --grid:#2a2a2f; --panel:#1f1f23;
+  --all:#f0825a; --rs3:#f0825a; --osrs:#4fb8e0; --trade:#e6b84a; --mtx:#9c93f2; --osrs-ev:#6db2f5; --rev:#ef7fbf; --neutral:#b9b7ae; color-scheme:dark }
 body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.55;
   padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1{font-size:22px;font-weight:600;margin:0 0 4px;text-wrap:balance}
@@ -29,6 +29,7 @@ h1{font-size:22px;font-weight:600;margin:0 0 4px;text-wrap:balance}
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 12px;font-size:13px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .sw{width:18px;height:3px;border-radius:2px;display:inline-block}
+.mk{width:8px;height:8px;display:inline-block;margin-left:-4px}
 .pill{width:14px;height:14px;border-radius:50%;display:inline-block;border:1.5px solid}
 .tick{width:0;height:14px;display:inline-block;border-left:1.5px dashed var(--neutral)}
 .strip{position:relative;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow-x:auto;overflow-y:hidden;
@@ -37,6 +38,8 @@ h1{font-size:22px;font-weight:600;margin:0 0 4px;text-wrap:balance}
 .strip.follow{cursor:ew-resize}
 .ctl{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:0 0 10px}
 .ctl input{accent-color:var(--rs3)}
+.btn{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer}
+.btn:focus-visible{outline:2px solid var(--rs3);outline-offset:2px}
 .strip .inner{display:flex;align-items:flex-start;width:max-content}
 #chart{flex:0 0 auto;display:block}
 .axis{position:sticky;left:0;z-index:2;background:var(--panel);border-right:1px solid var(--line);flex:0 0 auto}
@@ -56,10 +59,11 @@ svg text{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 <h1>RuneScape population timeline</h1>
 <p class="sub">Monthly average concurrent players for RuneScape and Old School RuneScape from the game's launch in January 2001 to October 2026, with every month labelled. Scroll the chart sideways. Every update sits in a bubble linked to its data point: OSRS above the plot, the main game and Jagex-wide items below.</p>
 <div class="legend">
-  <span><i class="sw" style="background:var(--rs3)"></i>Main game (RuneScape, then RS3)</span>
-  <span><i class="sw" style="background:var(--osrs)"></i>OSRS</span>
+  <span><i class="sw" style="background:var(--rs3)"></i><i class="mk" style="background:var(--rs3);border-radius:50%"></i>Main game (RuneScape, then RS3), round markers</span>
+  <span><i class="sw" style="background:var(--osrs)"></i><i class="mk" style="background:var(--osrs)"></i>OSRS, square markers</span>
   <span><i class="tick"></i>Jagex-wide updates (ownership, lockdowns)</span>
 </div>
+<div class="ctl"><button type="button" id="theme" class="btn">Theme: system</button></div>
 <label class="ctl"><input type="checkbox" id="follow"> Follow cursor: move the mouse across the chart to scroll it (otherwise click and drag)</label>
 <div class="strip" id="strip"><div class="inner"><svg class="axis" id="axis" aria-hidden="true"></svg><svg id="chart" role="img"><title>Monthly average concurrent players, 2001 to 2026</title></svg></div></div>
 <p class="hint">Tip: drag the chart, hold Shift and use the mouse wheel, or turn on Follow cursor. Pre-2013 values come from archived snapshots of Jagex's own player counter, which skew toward peak hours; months with no archived snapshot are bridged with a dotted segment (most of 2001–2003, plus Nov 2005 and Aug 2007).</p>
@@ -71,7 +75,7 @@ const D = {"pre":[["2001-03",429],["2001-05",1267],["2001-06",1844],["2001-07",1
 const EV = [[1, "2007-12", "Free trade and Wilderness removed", "trade"], [2, "2011-02", "Free trade and Wilderness return", "trade"], [3, "2011-10", "Bot Nuke Day", "trade"], [4, "2012-02", "Squeal of Fortune", "mtx"], [5, "2012-11", "Evolution of Combat", "mtx"], [6, "2013-02", "OSRS launches", "osrs"], [7, "2013-07", "RS3 branding", "mtx"], [8, "2014-02", "Treasure Hunter", "mtx"], [9, "2015-02", "OSRS free-to-play", "osrs"], [10, "2018-10", "OSRS mobile", "osrs"], [11, "2020-04", "COVID lockdowns", "neutral"], [12, "2023-08", "Necromancy", "mtx"], [13, "2023-09", "Hero Pass", "mtx"], [14, "2024-09", "Membership to $13.99", "neutral"], [15, "2025-10", "Vote to remove Treasure Hunter", "rev"], [16, "2026-01", "Treasure Hunter removed", "rev"]];
 const OTHER = [["2005-07", "Farming", "all"], ["2005-01", "Slayer", "all"], ["2006-05", "Construction", "all"], ["2006-11", "Hunter", "all"], ["2007-05", "1M subscribers", "all"], ["2007-11", "Grand Exchange", "all"], ["2008-01", "Summoning", "all"], ["2008-07", "RuneScape HD", "all"], ["2009-02", "Gerhard CEO", "jagex"], ["2010-04", "Dungeoneering", "all"], ["2010-12", "Insight buys majority", "jagex"], ["2011-01", "Nex", "all"], ["2012-05", "Queen Black Dragon", "all"], ["2012-07", "Solomon's Store", "all"], ["2013-03", "The World Wakes", "rs3"], ["2013-08", "Divination", "rs3"], ["2013-09", "Bonds", "rs3"], ["2013-12", "Holiday season", "rs3"], ["2014-07", "Legacy Mode + Araxxor", "rs3"], ["2014-09", "Prifddinas", "rs3"], ["2015-03", "Dimension of Disaster", "rs3"], ["2015-07", "Raids (Mazcab)", "rs3"], ["2016-01", "Invention", "rs3"], ["2016-04", "NXT client", "rs3"], ["2016-06", "Telos", "rs3"], ["2016-12", "Sliske's Endgame", "rs3"], ["2017-06", "Menaphos", "rs3"], ["2018-05", "Solak", "rs3"], ["2018-09", "Player-owned farm", "rs3"], ["2018-10", "Mobile members beta", "rs3"], ["2019-01", "Mining & Smithing rework", "rs3"], ["2019-07", "Land Out of Time", "rs3"], ["2020-03", "Archaeology", "rs3"], ["2020-10", "Steam release", "rs3"], ["2021-01", "20th anniversary", "rs3"], ["2021-06", "Mobile launch + Senntisten", "rs3"], ["2021-10", "TzekHaar Front", "rs3"], ["2022-04", "Extinction", "rs3"], ["2022-07", "Zamorak boss", "rs3"], ["2022-09", "Fresh Start Worlds", "rs3"], ["2023-02", "Fort Forinthry", "rs3"], ["2023-06", "Woodcutters' Grove", "rs3"], ["2023-11", "Vorkath", "rs3"], ["2024-04", "Requiem for a Dragon", "rs3"], ["2024-07", "Sanctum of Rebirth", "rs3"], ["2024-08", "110 Mining & Smithing", "rs3"], ["2024-10", "Group Ironman", "rs3"], ["2024-12", "110 WC & Fletching", "rs3"], ["2025-01", "Pricing survey backlash", "rs3"], ["2025-05", "Augmented RC & Thieving", "rs3"], ["2025-07", "Eclipse of the Heart", "rs3"], ["2025-09", "Leagues: Catalyst", "rs3"], ["2025-11", "Heists", "rs3"], ["2026-01", "25th anniversary", "rs3"], ["2026-02", "Early-game rebalance", "rs3"], ["2026-03", "Combat modernisation + Havenhythe", "rs3"], ["2026-05", "Dungeoneering Remastered", "rs3"], ["2026-07", "POH rework + mid-game rebalance", "rs3"], ["2026-08", "Leagues II: Equilibrium", "rs3"], ["2026-09", "Havenhythe II + Vulkan beta", "rs3"], ["2026-10", "Reignited announced then cancelled", "rs3"], ["2013-10", "God Wars Dungeon", "osrs"], ["2014-10", "Ironman modes", "osrs"], ["2015-10", "Deadman Mode", "osrs"], ["2016-01", "Zeah", "osrs"], ["2017-01", "Chambers of Xeric", "osrs"], ["2017-09", "Fossil Island", "osrs"], ["2018-01", "Dragon Slayer II", "osrs"], ["2018-06", "Theatre of Blood", "osrs"], ["2019-07", "Song of the Elves", "osrs"], ["2019-11", "Leagues I: Twisted", "osrs"], ["2020-02", "Nightmare of Ashihama", "osrs"], ["2020-10", "Leagues II: Trailblazer", "osrs"], ["2021-02", "Steam release", "osrs"], ["2021-10", "Group Ironman", "osrs"], ["2022-01", "Leagues III + Nex", "osrs"], ["2022-08", "Tombs of Amascut", "osrs"], ["2023-01", "Wilderness boss rework", "osrs"], ["2023-06", "Forestry", "osrs"], ["2023-11", "Leagues IV: Trailblazer Reloaded", "osrs"], ["2024-03", "Varlamore pt 1", "osrs"], ["2024-11", "Leagues V: Raging Echoes", "osrs"], ["2025-01", "League ends", "osrs"], ["2025-06", "Sailing beta", "osrs"], ["2025-07", "Varlamore: Final Dawn", "osrs"], ["2025-08", "240k record", "osrs"], ["2025-11", "Sailing", "osrs"], ["2026-04", "Leagues VI: Demonic Pacts", "osrs"], ["2016-07", "Hongtou buys Jagex", "jagex"], ["2021-01", "Carlyle buys Jagex", "jagex"], ["2024-02", "CVC buys Jagex", "jagex"], ["2015-09", "DarkScape", "rs3"], ["2018-08", "Elite Dungeons", "rs3"], ["2019-03", "Mobile Android beta", "rs3"], ["2019-10", "Mobile early access", "rs3"], ["2016-09", "Wintertodt", "osrs"], ["2016-11", "Hardcore Ironman", "osrs"], ["2019-01", "Kebos Lowlands", "osrs"], ["2021-05", "Clans", "osrs"], ["2021-07", "Combat Achievements", "osrs"], ["2008-08", "Membership to $5.95", "jagex"], ["2012-01", "Membership to $7.95", "jagex"], ["2015-03", "Membership to $9.49", "jagex"], ["2018-06", "Membership to $10.99", "jagex"], ["2022-05", "Membership to $12.49", "jagex"], ["2026-03", "Membership to $14.99", "jagex"], ["2017-01", "Mansell CEO", "jagex"], ["2025-03", "Bellamy CEO", "jagex"], ["2025-06", "Pride event cancelled", "jagex"], ["2022-03", "Jagex Launcher", "jagex"], ["2017-06", "Inferno", "osrs"], ["2023-07", "Desert Treasure II", "osrs"], ["2020-07", "Ferox Enclave", "osrs"], ["2024-01", "Leagues IV ends", "osrs"], ["2019-11", "Yak Track", "rs3"], ["2016-02", "RuneMetrics Pro", "rs3"], ["2017-05", "Shattered Worlds", "rs3"], ["2001-01", "RuneScape launches", "all"], ["2001-03", "Second server", "jagex"], ["2001-05", "Magic system + 4th server", "all"], ["2001-06", "Fishing + Karamja", "all"], ["2001-08", "Wilderness", "all"], ["2001-10", "Premium service announced", "jagex"], ["2001-12", "Jagex founded", "jagex"], ["2002-02", "Membership launches at $5 + Herblaw", "all"], ["2002-03", "Fletching", "all"], ["2002-04", "Thieving + Ardougne", "all"], ["2002-09", "Tutorial Island", "all"], ["2002-10", "Yanille", "all"], ["2002-11", "Fatigue system", "all"], ["2002-12", "Agility", "all"], ["2003-01", "Shilo Village", "all"], ["2003-05", "Australia server", "jagex"], ["2003-08", "Legends' Quest", "all"], ["2003-09", "Mage Arena", "all"], ["2003-12", "RuneScape 2 beta", "all"], ["2004-03", "RuneScape 2 + Runecrafting", "all"], ["2015-03", "Bonds", "osrs"], ["2025-09", "257k record", "osrs"], ["2005-05", "Barrows", "all"], ["2004-09", "Duel Arena + Kalphite Queen", "all"], ["2004-10", "Morytania expansion", "all"], ["2004-12", "Castle Wars + Monkey Madness", "all"], ["2006-03", "Recipe for Disaster", "all"], ["2006-04", "Pest Control", "all"], ["2006-07", "Lunar Diplomacy", "all"], ["2007-02", "Fremennik Isles", "all"], ["2007-08", "God Wars Dungeon", "all"], ["2008-04", "Fist of Guthix", "all"], ["2008-11", "Stealing Creation + While Guthix Sleeps", "all"], ["2009-02", "Soul Wars", "all"], ["2009-07", "Mobilising Armies", "all"], ["2009-09", "Living Rock Caverns", "all"], ["2010-01", "Nomad's Requiem", "all"], ["2010-10", "The Void Stares Back", "all"], ["2011-06", "Members' Loyalty Programme", "all"], ["2011-07", "Clan Citadels", "all"], ["2011-09", "Ritual of the Mahjarrat", "all"], ["2011-11", "Dominion Tower", "all"], ["2012-04", "Runespan", "all"], ["2012-10", "KBD + dungeon rework", "all"], ["2012-12", "Player-owned Ports", "all"]];
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const PX = 34, LEFT = 70, H = 420, YMAX = 200000, PITCH = 46, PAD = 36;
+const PX = 36, LEFT = 70, H = 440, YMAX = 200000, PITCH = 52, PAD = 36;
 function wrap(t, max=18){ const out=[]; let line=''; t.split(' ').forEach(w=>{ if((line+' '+w).trim().length>max && line){out.push(line); line=w;} else line=(line+' '+w).trim(); }); if(line) out.push(line); return out; }
 function idx(m){ const [y,mo]=m.split('-').map(Number); return y*12+mo-1; }
 const m0 = idx('2001-01'), m1 = idx('2026-10');
@@ -100,8 +104,8 @@ const rowsTop=[], rowsBot=[];
 items.forEach(it=>{
   it.px = x(it.m);
   it.lines = wrap(it.label);
-  it.bw = Math.max(...it.lines.map(l=>l.length))*6.4 + 14;
-  it.bh = it.lines.length*12 + 9;
+  it.bw = Math.max(...it.lines.map(l=>l.length))*7.1 + 16;
+  it.bh = it.lines.length*14 + 10;
   it.side = it.game==='osrs' ? 'top' : 'bot';
   const rows = it.side==='top' ? rowsTop : rowsBot;
   let r = rows.findIndex(e=>e < it.px-it.bw/2-6); if(r<0){r=rows.length; rows.push(0);} rows[r]=it.px+it.bw/2;
@@ -111,6 +115,7 @@ const TOP = PAD + rowsTop.length*PITCH + 10;
 const BOT = 44 + rowsBot.length*PITCH + PAD;
 const y = v => TOP + H - (v/YMAX)*H;
 
+function render(){
 const svg = document.getElementById('chart');
 svg.setAttribute('width', W); svg.setAttribute('height', TOP+H+BOT);
 svg.setAttribute('viewBox', `0 0 ${W} ${TOP+H+BOT}`);
@@ -119,13 +124,13 @@ for (let v=0; v<=YMAX; v+=25000) out += `<line x1="0" x2="${W}" y1="${y(v)}" y2=
 for (let yr=2001; yr<=2026; yr++){
   const xs = x(yr+'-01') - PX/2, xe = x(yr+'-12') + PX/2;
   if (yr%2===0) out += `<rect x="${xs}" y="${TOP}" width="${xe-xs}" height="${H}" fill="${css('--grid')}" opacity="0.35"/>`;
-  out += `<text x="${(xs+xe)/2}" y="${TOP+H+22}" text-anchor="middle" font-size="13" font-weight="500" fill="${css('--fg')}">${yr}</text>`;
+  out += `<text x="${(xs+xe)/2}" y="${TOP+H+22}" text-anchor="middle" font-size="14" font-weight="500" fill="${css('--fg')}">${yr}</text>`;
 }
 for (let i=0;i<n;i++){ const mo=(m0+i)%12; const xx=LEFT+i*PX+PX/2;
   out += `<line x1="${xx}" x2="${xx}" y1="${TOP+H}" y2="${TOP+H+(mo===0?8:4)}" stroke="${css('--line')}"/>`;
-  out += `<text x="${xx}" y="${TOP+H+36}" text-anchor="middle" font-size="8.5" fill="${css('--muted')}">${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mo]}</text>`;
+  out += `<text x="${xx}" y="${TOP+H+36}" text-anchor="middle" font-size="10" fill="${css('--muted')}">${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mo]}</text>`;
 }
-function series(arr, color, labelSide){
+function series(arr, color, labelSide, square){
   let path='', prev=null, pts='', bridges='', prevPt=null;
   arr.forEach(([m,v],i)=>{
     const px=x(m), py=y(v);
@@ -133,13 +138,13 @@ function series(arr, color, labelSide){
     path += (prev!==null && idx(m)-prev===1) ? ` L${px} ${py}` : ` M${px} ${py}`;
     prev = idx(m); prevPt=[px,py];
     const up = labelSide==='alt' ? (i%2===0) : labelSide==='up';
-    pts += `<circle cx="${px}" cy="${py}" r="2.4" fill="${color}"/>`;
-    pts += `<text x="${px}" y="${py + (up?-7:13)}" text-anchor="middle" font-size="9.5" fill="${color}">${fmt(v)}</text>`;
+    pts += square ? `<rect x="${px-2.8}" y="${py-2.8}" width="5.6" height="5.6" fill="${color}"/>` : `<circle cx="${px}" cy="${py}" r="2.6" fill="${color}"/>`;
+    pts += `<text x="${px}" y="${py + (up?-8:14)}" text-anchor="middle" font-size="11" font-weight="500" fill="${color}">${fmt(v)}</text>`;
   });
   return bridges + `<path d="${path.trim()}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round"/>` + pts;
 }
 out += series(D.pre, css('--rs3'), 'alt');
-out += series(D.osrs, css('--osrs'), 'up');
+out += series(D.osrs, css('--osrs'), 'up', true);
 out += series(D.rs3, css('--rs3'), 'down');
 
 // annotations
@@ -153,20 +158,28 @@ items.forEach(it=>{
   else if (v!=null) lineTo = it.side==='top' ? y(v) - 8 : y(v) + 8;
   else lineTo = it.side==='top' ? TOP : TOP+H;
   out += `<line x1="${it.px}" x2="${it.px}" y1="${lineFrom}" y2="${lineTo}" stroke="${c}" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.65"/>`;
-  if (v!=null) rings += `<circle cx="${it.px}" cy="${y(v)}" r="5.5" fill="none" stroke="${c}" stroke-width="1.5"/>`;
+  if (v!=null) rings += it.game==='osrs' ? `<rect x="${it.px-6}" y="${y(v)-6}" width="12" height="12" fill="none" stroke="${c}" stroke-width="1.5"/>` : `<circle cx="${it.px}" cy="${y(v)}" r="6" fill="none" stroke="${c}" stroke-width="1.5"/>`;
   bubbles += `<rect x="${it.px-it.bw/2}" y="${by}" width="${it.bw}" height="${it.bh}" rx="5" fill="${css('--panel')}" stroke="${c}" stroke-width="0.9"/>`;
-  bubbles += `<text x="${it.px}" y="${by+13}" text-anchor="middle" font-size="10" fill="${c}">` + it.lines.map((l,i)=>`<tspan x="${it.px}" dy="${i?12:0}">${l}</tspan>`).join('') + `</text>`;
+  bubbles += `<text x="${it.px}" y="${by+14}" text-anchor="middle" font-size="11" fill="${c}">` + it.lines.map((l,i)=>`<tspan x="${it.px}" dy="${i?14:0}">${l}</tspan>`).join('') + `</text>`;
 });
 svg.innerHTML = out + rings + bubbles;
 
 // sticky axis
-const ax = document.getElementById('axis'); const AW=52;
+const ax = document.getElementById('axis'); const AW=56;
 ax.setAttribute('width',AW); ax.setAttribute('height',TOP+H+BOT); ax.setAttribute('viewBox',`0 0 ${AW} ${TOP+H+BOT}`);
 let a='';
-for (let v=0; v<=YMAX; v+=50000) a += `<text x="${AW-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="${css('--muted')}">${v?v/1000+'k':'0'}</text>`;
+for (let v=0; v<=YMAX; v+=50000) a += `<text x="${AW-8}" y="${y(v)+4}" text-anchor="end" font-size="12" font-weight="500" fill="${css('--fg')}">${v?v/1000+'k':'0'}</text>`;
 ax.innerHTML=a;
 
 
+}
+render();
+const themeBtn = document.getElementById('theme');
+const THEMES = ['system','light','dark'];
+function applyTheme(t){ if(t==='system') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t; themeBtn.textContent = 'Theme: ' + t; render(); }
+try { const t = localStorage.getItem('rs-theme'); if (THEMES.includes(t)) applyTheme(t); } catch(e){}
+themeBtn.addEventListener('click', () => { const cur = document.documentElement.dataset.theme || 'system'; const next = THEMES[(THEMES.indexOf(cur)+1)%THEMES.length]; applyTheme(next); try { localStorage.setItem('rs-theme', next); } catch(e){} });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!document.documentElement.dataset.theme) render(); });
 const strip = document.getElementById('strip');
 strip.scrollLeft = 0;
 // drag to pan
