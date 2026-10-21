@@ -32,7 +32,11 @@ h1{font-size:22px;font-weight:600;margin:0 0 4px;text-wrap:balance}
 .pill{width:14px;height:14px;border-radius:50%;display:inline-block;border:1.5px solid}
 .tick{width:0;height:14px;display:inline-block;border-left:1.5px dashed var(--neutral)}
 .strip{position:relative;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow-x:auto;overflow-y:hidden;
-  scrollbar-width:thin}
+  scrollbar-width:thin;cursor:grab;user-select:none}
+.strip.dragging{cursor:grabbing}
+.strip.follow{cursor:ew-resize}
+.ctl{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:0 0 10px}
+.ctl input{accent-color:var(--rs3)}
 .strip .inner{display:flex;align-items:flex-start;width:max-content}
 #chart{flex:0 0 auto;display:block}
 .axis{position:sticky;left:0;z-index:2;background:var(--panel);border-right:1px solid var(--line);flex:0 0 auto}
@@ -56,8 +60,9 @@ svg text{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
   <span><i class="sw" style="background:var(--osrs)"></i>OSRS</span>
   <span><i class="tick"></i>Jagex-wide updates (ownership, lockdowns)</span>
 </div>
+<label class="ctl"><input type="checkbox" id="follow"> Follow cursor: move the mouse across the chart to scroll it (otherwise click and drag)</label>
 <div class="strip" id="strip"><div class="inner"><svg class="axis" id="axis" aria-hidden="true"></svg><svg id="chart" role="img"><title>Monthly average concurrent players, 2001 to 2026</title></svg></div></div>
-<p class="hint">Tip: hold Shift and use the mouse wheel to scroll sideways. Pre-2013 values come from archived snapshots of Jagex's own player counter, which skew toward peak hours; months with no archived snapshot are bridged with a dotted segment (most of 2001–2003, plus Nov 2005 and Aug 2007).</p>
+<p class="hint">Tip: drag the chart, hold Shift and use the mouse wheel, or turn on Follow cursor. Pre-2013 values come from archived snapshots of Jagex's own player counter, which skew toward peak hours; months with no archived snapshot are bridged with a dotted segment (most of 2001–2003, plus Nov 2005 and Aug 2007).</p>
 
 <p class="src">Player counts: aggrgtr.com (continuous tracker from Feb 2013; Wayback Machine reconstruction before that). Events: Jagex news posts, OSRS Wiki, GamerBlurb, PC Gamer, Checkpoint Gaming, and the leaked 2011 Jagex botting memo.</p>
 
@@ -162,8 +167,21 @@ for (let v=0; v<=YMAX; v+=50000) a += `<text x="${AW-8}" y="${y(v)+4}" text-anch
 ax.innerHTML=a;
 
 
-// open scrolled to 2007 so the peak and first drop are in view
-document.getElementById('strip').scrollLeft = 0;
+const strip = document.getElementById('strip');
+strip.scrollLeft = 0;
+// drag to pan
+let drag = null;
+strip.addEventListener('pointerdown', e => { if (follow.checked || e.button!==0) return; drag = {x:e.clientX, s:strip.scrollLeft}; strip.classList.add('dragging'); strip.setPointerCapture(e.pointerId); });
+strip.addEventListener('pointermove', e => {
+  if (drag) { strip.scrollLeft = drag.s - (e.clientX - drag.x); return; }
+  if (follow.checked) { const r = strip.getBoundingClientRect(); const t = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); strip.scrollLeft = t * (strip.scrollWidth - strip.clientWidth); }
+});
+const endDrag = () => { drag = null; strip.classList.remove('dragging'); };
+strip.addEventListener('pointerup', endDrag); strip.addEventListener('pointercancel', endDrag);
+const follow = document.getElementById('follow');
+follow.addEventListener('change', () => strip.classList.toggle('follow', follow.checked));
+try { follow.checked = localStorage.getItem('rs-follow')==='1'; strip.classList.toggle('follow', follow.checked); } catch(e){}
+follow.addEventListener('change', () => { try { localStorage.setItem('rs-follow', follow.checked?'1':'0'); } catch(e){} });
 </script>
 
 </body>
