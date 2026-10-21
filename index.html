@@ -40,6 +40,11 @@ h1{font-size:22px;font-weight:600;margin:0 0 4px;text-wrap:balance}
 .ctl input{accent-color:var(--rs3)}
 .btn{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer}
 .btn:focus-visible{outline:2px solid var(--rs3);outline-offset:2px}
+.bub{cursor:help}
+.bub:focus-visible rect{stroke-width:2}
+.tip{position:absolute;z-index:3;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12.5px;line-height:1.45;padding:8px 12px;border-radius:8px;min-width:240px;max-width:320px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.tip b{font-weight:600}
+.tip .row{display:flex;justify-content:space-between;gap:14px;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 .strip .inner{display:flex;align-items:flex-start;width:max-content}
 #chart{flex:0 0 auto;display:block}
 .axis{position:sticky;left:0;z-index:2;background:var(--panel);border-right:1px solid var(--line);flex:0 0 auto}
@@ -65,7 +70,7 @@ svg text{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 </div>
 <div class="ctl"><button type="button" id="theme" class="btn">Theme: system</button></div>
 <label class="ctl"><input type="checkbox" id="follow"> Follow cursor: move the mouse across the chart to scroll it (otherwise click and drag)</label>
-<div class="strip" id="strip"><div class="inner"><svg class="axis" id="axis" aria-hidden="true"></svg><svg id="chart" role="img"><title>Monthly average concurrent players, 2001 to 2026</title></svg></div></div>
+<div class="strip" id="strip"><div class="tip" id="tip" role="status" hidden></div><div class="inner"><svg class="axis" id="axis" aria-hidden="true"></svg><svg id="chart" role="img"><title>Monthly average concurrent players, 2001 to 2026</title></svg></div></div>
 <p class="hint">Tip: drag the chart, hold Shift and use the mouse wheel, or turn on Follow cursor. Pre-2013 values come from archived snapshots of Jagex's own player counter, which skew toward peak hours; months with no archived snapshot are bridged with a dotted segment (most of 2001–2003, plus Nov 2005 and Aug 2007).</p>
 
 <p class="src">Player counts: aggrgtr.com (continuous tracker from Feb 2013; Wayback Machine reconstruction before that). Events: Jagex news posts, OSRS Wiki, GamerBlurb, PC Gamer, Checkpoint Gaming, and the leaked 2011 Jagex botting memo.</p>
@@ -159,8 +164,8 @@ items.forEach(it=>{
   else lineTo = it.side==='top' ? TOP : TOP+H;
   out += `<line x1="${it.px}" x2="${it.px}" y1="${lineFrom}" y2="${lineTo}" stroke="${c}" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.65"/>`;
   if (v!=null) rings += it.game==='osrs' ? `<rect x="${it.px-6}" y="${y(v)-6}" width="12" height="12" fill="none" stroke="${c}" stroke-width="1.5"/>` : `<circle cx="${it.px}" cy="${y(v)}" r="6" fill="none" stroke="${c}" stroke-width="1.5"/>`;
-  bubbles += `<rect x="${it.px-it.bw/2}" y="${by}" width="${it.bw}" height="${it.bh}" rx="5" fill="${css('--panel')}" stroke="${c}" stroke-width="0.9"/>`;
-  bubbles += `<text x="${it.px}" y="${by+14}" text-anchor="middle" font-size="11" fill="${c}">` + it.lines.map((l,i)=>`<tspan x="${it.px}" dy="${i?14:0}">${l}</tspan>`).join('') + `</text>`;
+  bubbles += `<g class="bub" data-i="${items.indexOf(it)}" tabindex="0"><rect x="${it.px-it.bw/2}" y="${by}" width="${it.bw}" height="${it.bh}" rx="5" fill="${css('--panel')}" stroke="${c}" stroke-width="0.9"/>`;
+  bubbles += `<text x="${it.px}" y="${by+14}" text-anchor="middle" font-size="11" fill="${c}">` + it.lines.map((l,i)=>`<tspan x="${it.px}" dy="${i?14:0}">${l}</tspan>`).join('') + `</text></g>`;
 });
 svg.innerHTML = out + rings + bubbles;
 
@@ -182,6 +187,36 @@ themeBtn.addEventListener('click', () => { const cur = document.documentElement.
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!document.documentElement.dataset.theme) render(); });
 const strip = document.getElementById('strip');
 strip.scrollLeft = 0;
+const tip = document.getElementById('tip');
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const nice = m => MONTHS[+m.slice(5,7)-1] + ' ' + m.slice(0,4);
+const prevMonth = m => { let y=+m.slice(0,4), mo=+m.slice(5,7)-1; if(!mo){mo=12;y--;} return `${y}-${String(mo).padStart(2,'0')}`; };
+const full = v => v.toLocaleString('en-US');
+function rowFor(name, ser, m){
+  const v = VAL[ser][m]; if (v==null) return '';
+  const pv = VAL[ser][prevMonth(m)];
+  const d = pv!=null ? `<span style="opacity:.75"> ${v>=pv?'+':'−'}${Math.abs(Math.round((v-pv)/pv*100))}%</span>` : '';
+  return `<div class="row"><span>${name}</span><span>${full(v)}${d}</span></div>`;
+}
+function showTip(g, clientX, clientY){
+  const it = items[+g.dataset.i];
+  const who = it.game==='osrs' ? 'OSRS' : it.game==='jagex' ? 'Jagex-wide' : (idx(it.m)>=idx('2013-02') ? 'RS3' : 'RuneScape');
+  let html = `<b>${it.label}</b><br>${who} · ${nice(it.m)}<br>`;
+  html += rowFor(idx(it.m)>=idx('2013-02') ? 'RS3' : 'RuneScape', idx(it.m)>=idx('2013-02') ? 'rs3' : 'all', it.m);
+  if (idx(it.m)>=idx('2013-02')) html += rowFor('OSRS','osrs',it.m);
+  html += `<div style="opacity:.75;margin-top:4px">Monthly avg. concurrent · % vs previous month</div>`;
+  tip.innerHTML = html; tip.hidden = false;
+  const r = strip.getBoundingClientRect();
+  let x = clientX - r.left + strip.scrollLeft + 14, y = clientY - r.top + 14;
+  if (x + tip.offsetWidth > strip.scrollLeft + r.width - 8) x = clientX - r.left + strip.scrollLeft - tip.offsetWidth - 14;
+  if (y + tip.offsetHeight > r.height - 8) y = clientY - r.top - tip.offsetHeight - 14;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+const chartEl = document.getElementById('chart');
+chartEl.addEventListener('pointermove', e => { const g = e.target.closest('.bub'); if (g) showTip(g, e.clientX, e.clientY); else tip.hidden = true; });
+chartEl.addEventListener('pointerleave', () => tip.hidden = true);
+chartEl.addEventListener('focusin', e => { const g = e.target.closest('.bub'); if (g){ const b = g.getBoundingClientRect(); showTip(g, b.left + b.width/2, b.bottom); } });
+chartEl.addEventListener('focusout', () => tip.hidden = true);
 // drag to pan
 let drag = null;
 strip.addEventListener('pointerdown', e => { if (follow.checked || e.button!==0) return; drag = {x:e.clientX, s:strip.scrollLeft}; strip.classList.add('dragging'); strip.setPointerCapture(e.pointerId); });
