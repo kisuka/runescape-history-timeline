@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Monthly average concurrent players for RuneScape and Old School RuneScape, 2001 to today, with every major update pinned to the month it shipped.">
+<title>RuneScape Population Timeline</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>__CSS__</style>
+</head>
+<body>
+<h1>RuneScape population timeline</h1>
+<p class="sub">Monthly average concurrent players for RuneScape and Old School RuneScape from the game's launch in January 2001 to __LAST_MONTH__, with every month labelled. Scroll the chart sideways. Updates are marked above the plot for OSRS and below it for the main game and Jagex-wide items.</p>
+<div class="legend">
+  <span><i class="sw" style="background:var(--rs3)"></i><i class="mk" style="background:var(--rs3);border-radius:50%"></i>Main game (RuneScape, then RS3), round markers</span>
+  <span><i class="sw" style="background:var(--osrs)"></i><i class="mk" style="background:var(--osrs)"></i>OSRS, square markers</span>
+  <span><i class="tick"></i>Jagex-wide updates (ownership, lockdowns)</span>
+</div>
+<div class="ctl"><button type="button" id="theme" class="btn">Theme: system</button></div>
+<label class="ctl"><input type="checkbox" id="follow"> Follow cursor: move the mouse across the chart to scroll it (otherwise click and drag)</label>
+<div class="strip" id="strip"><div class="tip" id="tip" role="status" hidden></div><div class="inner"><svg class="axis" id="axis" aria-hidden="true"></svg><svg id="chart" role="img"><title>Monthly average concurrent players, 2001 to 2026</title></svg></div></div>
+<p class="hint">Drag the chart or hold Shift and scroll to move sideways. Pre-2013 values come from archived snapshots of Jagex's player counter, which skew toward peak hours; months with no snapshot are bridged with a dotted line (most of 2001-2003, plus Nov 2005 and Aug 2007).</p>
+
+<p class="src"><a href="sources.html">Source for every event</a> · Player counts: aggrgtr.com (continuous tracker from Feb 2013; Wayback Machine reconstruction before that). Events: Jagex news posts, OSRS Wiki, GamerBlurb, PC Gamer, Checkpoint Gaming, and the leaked 2011 Jagex botting memo.</p>
+
+<script>__JS__</script>
+
+</body>
+</html>

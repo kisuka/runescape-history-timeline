@@ -1,0 +1,69 @@
+:root {
+  --bg: #f7f6f2;
+  --fg: #23231f;
+  --muted: #55544e;
+  --line: #d9d7cf;
+  --panel: #fff;
+  --rs3: #b8441c;
+  --osrs: #0b6f8e;
+  --neutral: #66645e;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --fg: #ebe9e2; --muted: #c4c2b9; --line: #3a3a40; --panel: #1f1f23;
+    --rs3: #f0825a; --osrs: #4fb8e0; --neutral: #b9b7ae;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --fg: #ebe9e2; --muted: #c4c2b9; --line: #3a3a40; --panel: #1f1f23;
+  --rs3: #f0825a; --osrs: #4fb8e0; --neutral: #b9b7ae;
+  color-scheme: dark;
+}
+
+html { color-scheme: light dark; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.5 var(--font-body);
+  padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1 { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
+.sub { color: var(--muted); max-width: 75ch; margin: 0 0 16px; }
+a { color: var(--osrs); }
+
+.ctl { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 14px; font-size: 13px; }
+input[type=search], select {
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--fg);
+}
+input[type=search] { padding: 6px 10px; min-width: 220px; }
+select { padding: 6px 8px; }
+.count { color: var(--muted); }
+
+.wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 12px;
+  position: sticky; top: 0;
+  background: var(--panel);
+}
+td.m, td.d { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.n { color: var(--muted); font-size: 12.5px; }
+
+/* game tags */
+.g { font-size: 11.5px; padding: 1px 7px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+.g-all, .g-rs3 { color: var(--rs3); border-color: var(--rs3); }
+.g-osrs { color: var(--osrs); border-color: var(--osrs); }
+.g-jagex { color: var(--neutral); border-color: var(--neutral); }

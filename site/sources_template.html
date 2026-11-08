@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RuneScape Timeline Sources</title>
+<meta name="description" content="Source for every event on the RuneScape population timeline: exact date found and the wiki or press page it came from.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>__CSS__</style>
+</head>
+<body>
+<h1>Timeline sources</h1>
+<p class="sub">Every event on the RuneScape population timeline, with the exact date found and the page it was taken from. Dates were looked up on runescape.wiki, oldschool.runescape.wiki, classic.runescape.wiki, Wikipedia, and Jagex's own news posts; a handful of 2025-2026 items come from gaming press where no wiki page exists.</p>
+<div class="ctl">
+  <input type="search" id="q" placeholder="Filter events…" aria-label="Filter events">
+  <select id="game" aria-label="Game"><option value="">All games</option><option value="all">RuneScape (pre-2013)</option><option value="rs3">RS3</option><option value="osrs">OSRS</option><option value="jagex">Jagex</option></select>
+  <span class="count" id="count"></span>
+</div>
+<div class="wrap"><table id="t"><thead><tr><th>Month</th><th>Game</th><th>Event</th><th>Date found</th><th>Source</th><th>Note</th></tr></thead><tbody>
+__ROWS__
+</tbody></table></div>
+<script>__JS__</script>
+</body>
+</html>
